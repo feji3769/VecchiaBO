@@ -1,28 +1,25 @@
 from setuptools import setup, find_packages
-
-setup(
-    name="pyvecch",
-    version="0.0.1",
-    packages=find_packages()
-)
-
-
-from setuptools import setup, Extension
-from torch.utils import cpp_extension
+from torch.utils.cpp_extension import CppExtension, BuildExtension
 import os
 import glob
 
-include_dirs = os.path.dirname(os.path.abspath(__file__)) 
-include_dirs = os.path.join(include_dirs, 'pyvecch', 'sorting')
-source_cpu = glob.glob(os.path.join(include_dirs, '*.cpp'))
 
-ext_module = [cpp_extension.CppExtension(
-  '_pyvecch', 
-  source_cpu,
-  include_dirs = [include_dirs]
-  )]
+root_dir = os.path.dirname(os.path.abspath(__file__))
+sorting_dir = os.path.join(root_dir, 'pyvecch', 'sorting')
+source_cpu = glob.glob(os.path.join(sorting_dir, '*.cpp'))
 
-setup(name='pyvecch',
-      ext_modules=ext_module,
-      cmdclass={'build_ext': cpp_extension.BuildExtension}, 
-      packages=find_packages())
+ext_modules = [
+    CppExtension(
+        name='_pyvecch',
+        sources=source_cpu,
+        include_dirs=[sorting_dir],
+    )
+]
+
+setup(
+    name='pyvecch',
+    version='0.0.1',
+    packages=find_packages(),
+    ext_modules=ext_modules,
+    cmdclass={'build_ext': BuildExtension}
+)
